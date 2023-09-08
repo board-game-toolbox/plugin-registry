@@ -10,16 +10,11 @@ import { Res } from 'src/type';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { PluginDetail } from './types';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PluginEntity } from 'src/data/plugins/plugin.entity';
-import { Repository } from 'typeorm';
+import { PluginService } from './plugin.service';
 
 @Controller('plugin')
 export class PluginController {
-  constructor(
-    @InjectRepository(PluginEntity)
-    private pluginRepo: Repository<PluginEntity>,
-  ) {}
+  constructor(private readonly pluginService: PluginService) {}
 
   @Post('upload')
   @UseInterceptors(
@@ -41,16 +36,9 @@ export class PluginController {
 
   @Get('all')
   async all(): Promise<Res<PluginDetail[]>> {
-    const plugins = await this.pluginRepo.find();
     return {
       code: 200,
-      data: plugins.map((pluginEntity) => ({
-        pluginId: pluginEntity.id,
-        pluginName: pluginEntity.name,
-        pluginIcon: pluginEntity.icon_url,
-        pluginDesc: pluginEntity.desc,
-        pluginSrc: pluginEntity.download_url,
-      })),
+      data: await this.pluginService.getAllPlugins(),
     };
   }
 }

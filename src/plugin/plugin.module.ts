@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PluginController } from './plugin.controller';
-import { PluginDAO } from 'src/data/plugins/plugin.module';
+import { PluginService } from './plugin.service';
 
 @Module({
-  imports: [PluginDAO],
+  providers: [PluginService],
   controllers: [PluginController],
 })
 export class PluginModule {}

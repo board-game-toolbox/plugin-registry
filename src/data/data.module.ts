@@ -1,18 +1,9 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PluginEntity } from './plugins/plugin.entity';
+import { Global, Module } from '@nestjs/common';
+import { PrismaService } from './data.service';
 
+@Global()
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.MYSQL_HOST,
-      port: parseInt(process.env.MYSQL_PORT),
-      username: process.env.MYSQL_USN,
-      password: process.env.MYSQL_PWD,
-      database: 'plugin_registry',
-      entities: [PluginEntity],
-    }),
-  ],
+  providers: [PrismaService],
+  exports: [PrismaService],
 })
 export class DataModule {}
