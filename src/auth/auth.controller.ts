@@ -56,6 +56,6 @@ export class AuthController {
 function getJwtToken(jwtService: JwtService, user: User): string {
   return jwtService.sign({
     sub: user.id,
-    usn: user.usn,
+    username: user.usn,
   });
 }

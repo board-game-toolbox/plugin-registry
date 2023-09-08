@@ -16,4 +16,25 @@ export class PluginService {
       pluginSrc: pluginEntity.src,
     }));
   }
+
+  async onFirstUpload(pluginId: string, userId: number) {
+    // @TODO real process
+    await this.prisma.plugin.create({
+      data: {
+        id: pluginId,
+        name: pluginId,
+        icon: `http://127.0.0.1:8000/plugins/${pluginId}/icon.png`,
+        desc: '',
+        src: `http://127.0.0.1:8000/plugins/${pluginId}/${pluginId}.zip`,
+      },
+    });
+    // set owner
+    await this.prisma.authority.create({
+      data: {
+        pluginId,
+        userId,
+        role: 'OWNER',
+      },
+    });
+  }
 }

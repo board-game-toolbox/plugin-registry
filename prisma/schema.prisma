@@ -11,15 +11,32 @@ datasource db {
 }
 
 model User {
-  id  Int @default(autoincrement()) @id
-  usn String @unique
-  pwd String
+  id        Int         @id @default(autoincrement())
+  usn       String      @unique
+  pwd       String
+  Authority Authority[]
 }
 
 model Plugin {
-  id   String  @id
-  name String
-  icon String
-  desc String
-  src  String
+  id        String      @id
+  name      String
+  icon      String
+  desc      String
+  src       String
+  Authority Authority[]
+}
+
+model Authority {
+  id       Int           @id @default(autoincrement())
+  userId   Int
+  pluginId String
+  role     DeveloperRole
+
+  User   User   @relation(fields: [userId], references: [id])
+  Plugin Plugin @relation(fields: [pluginId], references: [id])
+}
+
+enum DeveloperRole {
+  OWNER
+  MAINTAINER
 }

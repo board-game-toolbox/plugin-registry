@@ -16,17 +16,27 @@ import { PluginService } from './plugin.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { User } from '@prisma/client';
 import { STATUS_CODE } from 'src/utils/code';
+import { UploadPluginGuard } from 'src/auth/upload-plugin.guard';
+import { existsSync, mkdirSync } from 'fs';
 
 @Controller('plugin')
 export class PluginController {
   constructor(private readonly pluginService: PluginService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, UploadPluginGuard)
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: join(__dirname, '../../public/plugins'),
+        destination: (req, file, cb) => {
+          // chwazi.zip => public/plugins/chwazi
+          const pluginId = req.query.id;
+          const dir = join(__dirname, `../../public/plugins/${pluginId}`);
+          if (!existsSync(dir)) {
+            mkdirSync(dir);
+          }
+          cb(null, dir);
+        },
         filename: (_, file, cb) => {
           cb(null, file.originalname);
         },
@@ -38,7 +48,9 @@ export class PluginController {
     @Request() req,
   ): Res<string> {
     const user: User = req.user;
-    console.debug(`file uploaded by ${user.usn}(${user.id})`);
+    if (req.isFirstUpload) {
+      this.pluginService.onFirstUpload(req.query.id, user.id);
+    }
 
     return {
       code: STATUS_CODE.SUCCESS,
