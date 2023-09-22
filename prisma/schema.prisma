@@ -23,6 +23,8 @@ model Plugin {
   icon      String
   desc      String
   src       String
+  updatedAt DateTime    @updatedAt @default(now())
+  createdAt DateTime    @default(now())
   Authority Authority[]
 }
 
